@@ -154,7 +154,7 @@ void OpenBD()
 
 void BF(int lvl)
 {
-	if (lvl >= 10) 
+	if (lvl == 10) 
 	{
 		disk = 0;
 		for (int n = 0; n < 10; n++)
@@ -177,7 +177,6 @@ void BF(int lvl)
 		}
 		return;
 	}
-
 /*	if (lvl==0)
 	{
 		dsk[0].add_Film(films[lvl]);
@@ -191,8 +190,13 @@ void BF(int lvl)
 		if (test==0)
 		{
 			lvl++;
+			if (lvl == 1)
+			{
+				cout << "lvl: 1" << endl;
+			}
 			BF(lvl);
-			cout << "lvl" << lvl << endl;
+			//cout << "lvl" << lvl << endl;
+			
 			lvl--;
 			dsk[i].del_Film();
 			//cout << "film " << lvl << "on disk " << i << endl;
@@ -223,19 +227,25 @@ void WorkBF()
 		}
 		for (int q = 0; q < 10; q++)
 		{
+			cout << "viborka: " << q << endl;
+			BF(lvl);
 			for (int i = 0; i < 10; i++)
 			{
-				BF(lvl);
 				if (i == 0)
 				{
 					films[10].set_Volume(films[0].get_Volume());
+					films[i].set_Volume(films[i + 1].get_Volume());
 				}
 				else
 				{
 					films[i].set_Volume(films[i + 1].get_Volume());
 				}
+				dsk[i].clear();
 			}
-			cout << "viborka: " << q << endl;
+			/*for (int j = 0; j < 10; j++)
+			{
+				dsk[j].clear();
+			}*/
 		}
 		Percentage(dsk_opt,o_disk);
 		cout << "optimal disks: " << o_disk << endl;
