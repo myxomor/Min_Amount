@@ -18,6 +18,7 @@ int lvl = 0;
 int test;
 int o_disk = 10;
 int disk;
+const int16_t c_films = 12;	//количество фильмов в выборке
 //const double D = 1.2;
 
 void Percentage(vector <Disk> search, int cnt) 
@@ -54,10 +55,9 @@ int PercentageT(vector <Disk> search, int cnt)
 void CreateRandBD()
 {
 	ofstream BD("db.txt");
-	for
-		(int g = 0; g < 10; g++)
+	for	(int g = 0; g < 10; g++)
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < c_films; i++)
 		{
 			films.push_back(Film(rand() % 700));
 			BD << films[i].get_Volume() << endl;
@@ -72,10 +72,9 @@ void OpenBD()
 {
 	ifstream BD("db.txt");
 	int vol;
-	for
-		(int g = 0; g < 10; g++)
+	for	(int g = 0; g < 10; g++)
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < c_films; i++)
 		{
 			BD >> vol;
 			films.push_back(Film(vol));
@@ -154,10 +153,10 @@ void OpenBD()
 
 void BF(int lvl)
 {
-	if (lvl == 10) 
+	if (lvl == c_films)
 	{
 		disk = 0;
-		for (int n = 0; n < 10; n++)
+		for (int n = 0; n < c_films; n++)
 		{
 			if (dsk[n].test_Empty() != 0) {
 				disk++;
@@ -168,7 +167,7 @@ void BF(int lvl)
 		{
 			//dsk_opt = dsk;
 			o_disk = disk;
-			for (int i = 0; i < 10; i++)
+			for (int i = 0; i < c_films; i++)
 			{
 				dsk_opt[i] = Disk();
 				dsk_opt[i] = dsk[i];
@@ -184,7 +183,7 @@ void BF(int lvl)
 		BF(lvl);
 		lvl--;
 	}*/
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < c_films; i++)
 	{
 		test = dsk[i].add_Film(films[lvl]);
 		if (test==0)
@@ -200,7 +199,7 @@ void BF(int lvl)
 	
 void WorkBF()
 {
-	for (int j = 0; j < 10; j++)
+	for (int j = 0; j < c_films; j++)
 	{
 		dsk.push_back(Disk());
 		films.push_back(Film(0));
@@ -212,21 +211,21 @@ void WorkBF()
 	int vol;
 	for (int g = 0; g < 10; g++)	//количество выборок
 	{
-		for (int h = 0; h < 10; h++)
+		for (int h = 0; h < c_films; h++)
 		{
 			BD >> vol;
 			//films.push_back(Film(vol));
 			films[h].set_Volume(vol);
 		}
-		for (int q = 0; q < 10; q++)
+		for (int q = 0; q < c_films; q++)
 		{
 			cout << "viborka: " << q << endl;
 			BF(lvl);
-			for (int i = 0; i < 10; i++)
+			for (int i = 0; i < c_films; i++)
 			{
 				if (i == 0)
 				{
-					films[10].set_Volume(films[0].get_Volume());
+					films[c_films].set_Volume(films[0].get_Volume());
 					films[i].set_Volume(films[i + 1].get_Volume());
 				}
 				else
@@ -242,7 +241,7 @@ void WorkBF()
 		OUT << o_disk << endl;
 		OUT.close();
 		//films.clear();
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < c_films; j++)
 		{
 			dsk[j].clear();
 		}
@@ -255,19 +254,19 @@ void WorkBF()
 
 void RS(vector <Film> flms)
 {
-	int opt_disksR = 10;
+	int opt_disksR = c_films;
 	for (int c = 0; c < 1000; c++)
 	{
 		int t = 0;
 		int disksR = 0;
 		do
 		{
-			int i = rand() % 10;
+			int i = rand() % c_films;
 			//cout << "number" << i << endl;
 			if (flms[i].get_RStat() == false)
 			{
 				int test;
-				for (int d = 0; d < 10; d++)
+				for (int d = 0; d < c_films; d++)
 				{
 					test = dsk[d].add_Film(flms[i]);
 					//cout << test << endl;
@@ -280,8 +279,9 @@ void RS(vector <Film> flms)
 					}
 				}
 			}
-		} while (t != 10);
-		for (int n = 0; n < 10; n++)
+		} while (t != c_films);
+		//cout << "cirle# " << c << endl;
+		for (int n = 0; n < c_films; n++)
 		{
 			if (dsk[n].test_Empty() != 0) {
 				disksR++;
@@ -294,7 +294,7 @@ void RS(vector <Film> flms)
 			dsk_opt = dsk;
 		}
 		//cout << "needed disks: " << disksR << endl;
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < c_films; j++)
 		{
 			dsk[j].clear();
 			flms[j].set_RStat(false);
@@ -305,7 +305,7 @@ void RS(vector <Film> flms)
 	ofstream OUTRS("RS.txt");
 	OUTRS << opt_disksR << endl;
 	OUTRS.close();
-	for (int j = 0; j < 10; j++)
+	for (int j = 0; j < c_films; j++)
 	{
 		dsk[j].clear();
 	}
@@ -313,7 +313,7 @@ void RS(vector <Film> flms)
 
 void WorkRS() 
 {
-	for (int j = 0; j < 10; j++)
+	for (int j = 0; j < c_films; j++)
 	{
 		dsk.push_back(Disk());
 		//dsk_opt.push_back(Disk());
@@ -323,9 +323,9 @@ void WorkRS()
 	}
 	ifstream BD("db.txt");
 	int vol;
-	for (int g = 0; g < 10; g++)
+	for (int g = 0; g < 10; g++)  //колтчество выборок
 	{
-		for (int h = 0; h < 10; h++)
+		for (int h = 0; h < c_films; h++)
 		{
 			BD >> vol;
 			films[h].set_Volume(vol);
@@ -342,11 +342,11 @@ void GM(vector <Film> flms)
 	int test;
 	int buf;
 	bool recT;
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < c_films; i++)
 	{
 		flms[i].set_RStat(false);
 		int min = i;
-		for (int q = i+1; q < 10; q++)
+		for (int q = i+1; q < c_films; q++)
 		{
 			if (flms[q].get_Volume()<flms[min].get_Volume())
 			{
@@ -359,7 +359,7 @@ void GM(vector <Film> flms)
 	int d = 0;
 	do
 	{
-		for (int f = 9; f >= 0; f--)
+		for (int f = c_films-1; f >= 0; f--)
 		{
 			recT = flms[f].get_RStat();
 			if (recT == false)
@@ -374,8 +374,8 @@ void GM(vector <Film> flms)
 		}
 		d++;
 		//cout << d << endl;
-	} while (t!=10);
-	for (int n = 0; n < 10; n++)
+	} while (t!= c_films);
+	for (int n = 0; n < c_films; n++)
 	{
 		if (dsk[n].test_Empty() != 0) {
 			disksR++;
@@ -387,7 +387,7 @@ void GM(vector <Film> flms)
 	ofstream OUTGM("GM.txt");
 	OUTGM << disksR << endl;
 	OUTGM.close();
-	for (int j = 0; j < 10; j++)
+	for (int j = 0; j < c_films; j++)
 	{
 		dsk[j].clear();
 	}
@@ -395,7 +395,7 @@ void GM(vector <Film> flms)
 
 void WorkGM() 
 {
-	for (int j = 0; j < 10; j++)
+	for (int j = 0; j < c_films; j++)
 	{
 		dsk.push_back(Disk());
 		films.push_back(Film(0));
@@ -404,7 +404,7 @@ void WorkGM()
 	int vol;
 	for (int g = 0; g < 10; g++)
 	{
-		for (int h = 0; h < 10; h++)
+		for (int h = 0; h < c_films; h++)
 		{
 			BD >> vol;
 			films[h].set_Volume(vol);
