@@ -190,16 +190,9 @@ void BF(int lvl)
 		if (test==0)
 		{
 			lvl++;
-			if (lvl == 1)
-			{
-				cout << "lvl: 1" << endl;
-			}
 			BF(lvl);
-			//cout << "lvl" << lvl << endl;
-			
 			lvl--;
 			dsk[i].del_Film();
-			//cout << "film " << lvl << "on disk " << i << endl;
 		}
 	}
 	//cout << "lvl" << lvl << endl;
@@ -217,7 +210,7 @@ void WorkBF()
 	films.push_back(Film(0));
 	ifstream BD("db.txt");
 	int vol;
-	for (int g = 0; g < 1; g++)
+	for (int g = 0; g < 10; g++)	//количество выборок
 	{
 		for (int h = 0; h < 10; h++)
 		{
@@ -242,13 +235,12 @@ void WorkBF()
 				}
 				dsk[i].clear();
 			}
-			/*for (int j = 0; j < 10; j++)
-			{
-				dsk[j].clear();
-			}*/
 		}
 		Percentage(dsk_opt,o_disk);
 		cout << "optimal disks: " << o_disk << endl;
+		ofstream OUT("BF.txt");
+		OUT << o_disk << endl;
+		OUT.close();
 		//films.clear();
 		for (int j = 0; j < 10; j++)
 		{
@@ -310,6 +302,9 @@ void RS(vector <Film> flms)
 	}
 	Percentage(dsk_opt, opt_disksR);
 	cout << "optimal count: " << opt_disksR << endl;
+	ofstream OUTRS("RS.txt");
+	OUTRS << opt_disksR << endl;
+	OUTRS.close();
 	for (int j = 0; j < 10; j++)
 	{
 		dsk[j].clear();
@@ -389,6 +384,9 @@ void GM(vector <Film> flms)
 	}
 	Percentage(dsk, disksR);
 	cout << "Needed disks: " << disksR << endl;
+	ofstream OUTGM("GM.txt");
+	OUTGM << disksR << endl;
+	OUTGM.close();
 	for (int j = 0; j < 10; j++)
 	{
 		dsk[j].clear();
