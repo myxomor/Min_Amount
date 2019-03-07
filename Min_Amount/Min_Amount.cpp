@@ -18,7 +18,7 @@ int lvl = 0;
 int test;
 int o_disk = 10;
 int disk;
-const int16_t c_films = 12;	//количество фильмов в выборке
+const int16_t c_films = 10;	//количество фильмов в выборке
 //const double D = 1.2;
 
 void Percentage(vector <Disk> search, int cnt) 
@@ -204,7 +204,6 @@ void WorkBF()
 		dsk.push_back(Disk());
 		films.push_back(Film(0));
 		workF.push_back(Film(0));
-		//cout << "create disk #" << j << endl;
 	}
 	films.push_back(Film(0));
 	ifstream BD("db.txt");
@@ -217,7 +216,7 @@ void WorkBF()
 			//films.push_back(Film(vol));
 			films[h].set_Volume(vol);
 		}
-		for (int q = 0; q < c_films; q++)
+		/*for (int q = 0; q < c_films; q++)
 		{
 			cout << "viborka: " << q << endl;
 			BF(lvl);
@@ -234,8 +233,9 @@ void WorkBF()
 				}
 				dsk[i].clear();
 			}
-		}
-		Percentage(dsk_opt,o_disk);
+		}*/
+		BF(lvl);
+		//Percentage(dsk_opt,o_disk);
 		cout << "optimal disks: " << o_disk << endl;
 		ofstream OUT("BF.txt");
 		OUT << o_disk << endl;
@@ -245,7 +245,7 @@ void WorkBF()
 		{
 			dsk[j].clear();
 		}
-		o_disk = 10;
+		o_disk = c_films;
 		disk = 0;
 		lvl = 0;
 	}
@@ -300,7 +300,7 @@ void RS(vector <Film> flms)
 			flms[j].set_RStat(false);
 		}
 	}
-	Percentage(dsk_opt, opt_disksR);
+	//Percentage(dsk_opt, opt_disksR);
 	cout << "optimal count: " << opt_disksR << endl;
 	ofstream OUTRS("RS.txt");
 	OUTRS << opt_disksR << endl;
@@ -382,7 +382,7 @@ void GM(vector <Film> flms)
 			//cout << "Count data #" << n << endl;
 		}
 	}
-	Percentage(dsk, disksR);
+	//Percentage(dsk, disksR);
 	cout << "Needed disks: " << disksR << endl;
 	ofstream OUTGM("GM.txt");
 	OUTGM << disksR << endl;
@@ -390,6 +390,52 @@ void GM(vector <Film> flms)
 	for (int j = 0; j < c_films; j++)
 	{
 		dsk[j].clear();
+	}
+}
+void GMT(vector <Film> flms)
+{
+	int FV; //film_volume
+	int DV; //disk_free_volume
+	int minF; //max_free_volume
+	int cnt; //number_selected_disk
+	int temp; //temp
+	int disksR = 0; //count_used_disks
+	for (int i = 0; i < c_films; i++)
+	{
+		FV = flms[i].get_Volume();
+		minF = 700;
+		cnt = 0;
+		for (int q = 0; q < c_films; q++)
+		{
+			DV = dsk[q].get_FVolume();
+			if (DV > FV)
+			{
+				if (minF >= DV)
+				{
+					minF = DV;
+					cnt = q;
+				}
+			}
+			else
+			{
+				continue;
+			}
+		}
+		//	cout << "F=" << F[cnt] << endl;
+		temp = dsk[cnt].add_Film(flms[i]);
+	}
+	for (int n = 0; n < c_films; n++)
+	{
+		if (dsk[n].test_Empty() != 0) {
+			disksR++;
+		}
+	}
+	cout << "needed disks: " << disksR << endl;
+	//Percentage(dsk, disksR);
+	for (int j = 0; j < c_films; j++)
+	{
+		dsk[j].clear();
+		flms[j].set_RStat(false);
 	}
 }
 
@@ -409,49 +455,53 @@ void WorkGM()
 			BD >> vol;
 			films[h].set_Volume(vol);
 		}
-		GM(films);
+		//cout << "--------------------------------" << endl;
+		//GM(films);
+		GMT(films);
 	}
 	BD.close();
 }
 
+
 int WR(vector <Film> flms, double t) 
 {
 	double D;
-	vector <long double> F;
-	double minF;
+	double F;
+	//vector <long double> F;
+	double maxF;
 	double R;
 	int cnt;
 	int disksR;
-	int opt_disksR = 10;
+	int opt_disksR = c_films;
 	D = t;
 	int result;
-	for (int w = 0; w < 10; w++)
+	/*for (int w = 0; w < c_films; w++)
 	{
 		F.push_back(0);
 		//cout << "w " << w << endl;
-	}
+	}*/
 	for (int c = 0; c < 1000; c++)
 	{
 		disksR = 0;
 		int FV = 0;
 		int DV = 0;
 		int temp;
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < c_films; i++)
 		{
 			FV = flms[i].get_Volume();
 			//minF = 701 * (1 + 2 * D*0.5);
-			minF = 0;
+			maxF = 701 * (1 + 2 * D*0.5);
 			cnt = 0;
-			for (int q = 0; q < 10; q++)
+			for (int q = 0; q < c_films; q++)
 			{
 				DV = dsk[q].get_FVolume();
 				if (DV > FV)
 				{
 					R = rand() % 100;
-					F[q] = DV*(1 + 2 *D*(R / 100 - 0.5));
-					if (minF<F[q])
+					F = DV*(1 + 2 *D*(R / 100 - 0.5));
+					if (maxF>=F)
 					{
-						minF = F[q];
+						maxF = F;
 						cnt = q;
 					}
 				}
@@ -463,7 +513,7 @@ int WR(vector <Film> flms, double t)
 		//	cout << "F=" << F[cnt] << endl;
 			temp = dsk[cnt].add_Film(flms[i]);
 		}
-		for (int n = 0; n < 10; n++)
+		for (int n = 0; n < c_films; n++)
 		{
 			if (dsk[n].test_Empty() != 0) {
 				disksR++;
@@ -479,7 +529,7 @@ int WR(vector <Film> flms, double t)
 				dsk_opt[pp] = dsk[pp];
 			}*/
 		}
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < c_films; j++)
 		{
 			dsk[j].clear();
 			flms[j].set_RStat(false);
@@ -487,8 +537,9 @@ int WR(vector <Film> flms, double t)
 		//cout << "new it" << endl;
 	}
 	//result = PercentageT(dsk_opt, opt_disksR);
-	cout << "optimal count: " << opt_disksR << endl;
-	for (int j = 0; j < 10; j++)
+	//cout << "optimal count: " << opt_disksR << endl;
+	//Percentage(dsk_opt, opt_disksR);
+	for (int j = 0; j < c_films; j++)
 	{
 		dsk[j].clear();
 		dsk_opt[j].clear();
@@ -499,6 +550,7 @@ int WR(vector <Film> flms, double t)
 
 void WorkWR() 
 {
+	int outR=0;
 	for (int j = 0; j < 10; j++)
 	{
 		dsk.push_back(Disk());
@@ -506,17 +558,18 @@ void WorkWR()
 	//	workF.push_back(Film(0));
 		//cout << "create disk #" << j << endl;
 	}
-	ifstream BD("test.txt");
+	ifstream BD("db.txt");
 	int vol;
-	for (int g = 0; g < 1; g++)
+	for (int g = 0; g < 10; g++)
 	{
 		for (int h = 0; h < 10; h++)
 		{
 			BD >> vol;
 			films[h].set_Volume(vol);
-			cout << vol << endl;
+			//cout << vol << endl;
 		}
-		//WR(films);		
+		outR = WR(films, 1.78); 
+		cout << "disks: " << outR << endl;
 	}
 	BD.close();
 
@@ -526,7 +579,7 @@ void test_intel()
 {
 	int answ;
 	int c = 0;
-	for (int j = 0; j < 10; j++)
+	for (int j = 0; j < c_films; j++)
 	{
 		dsk.push_back(Disk());
 		films.push_back(Film(0));
@@ -535,14 +588,14 @@ void test_intel()
 	}
 	ifstream BD("test.txt");
 	int vol;
-		for (int h = 0; h < 10; h++)
+		for (int h = 0; h < c_films; h++)
 		{
 			BD >> vol;
 			films[h].set_Volume(vol);
 			cout << vol << endl;
 		}
 		BD.close();
-		ofstream OUT("stat.txt");
+		ofstream OUT("stat_001_4.txt");
 		double iter = 0.000;
 		do
 		{
